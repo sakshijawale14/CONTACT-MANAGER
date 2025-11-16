@@ -164,8 +164,8 @@ def create_app():
     CORS(app, resources={
         r"/*": {
             "origins": [
-                "https://contact-manager-frontend-h56q.onrender.com",
-                "http://localhost:3000"
+                "https://contact-manager-frontend-h56q.onrender.com"
+                
             ]
         }
     }, supports_credentials=True)

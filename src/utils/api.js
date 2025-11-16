@@ -86,7 +86,7 @@ const apiRequest = async (endpoint, options = {}) => {
 // Auth API
 export const authAPI = {
   register: async (name, email, password) => {
-    const data = await apiRequest("/auth/register", {
+    const data = await apiRequest("/api/auth/register", {
       method: "POST",
       body: JSON.stringify({ name, email, password }),
     })
@@ -97,7 +97,7 @@ export const authAPI = {
   },
 
   login: async (email, password) => {
-    const data = await apiRequest("/auth/login", {
+    const data = await apiRequest("/api/auth/login", {
       method: "POST",
       body: JSON.stringify({ email, password }),
     })
@@ -108,7 +108,7 @@ export const authAPI = {
   },
 
   getCurrentUser: async () => {
-    return apiRequest("/auth/me")
+    return apiRequest("api/auth/me")
   },
 
   logout: () => {
@@ -197,59 +197,28 @@ export const messagesAPI = {
 }
 
 // Upload API
-// export const uploadAPI = {
-//   uploadImage: async (file) => {
-//     const token = getToken()
-//     const formData = new FormData()
-//     formData.append("file", file)
-
-//     const response = await fetch(`${API_BASE_URL}/api/upload`, {
-//       method: "POST",
-//       headers: {
-//         Authorization: `Bearer ${token}`,
-//       },
-//       body: formData,
-//     })
-
-//     if (!response.ok) {
-//       const error = await response.json()
-//       throw new Error(error.message || "Upload failed")
-//     }
-
-//     return response.json()
-//   },
-// }
-// Upload API
 export const uploadAPI = {
   uploadImage: async (file) => {
     const token = getToken()
     const formData = new FormData()
     formData.append("file", file)
 
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/upload`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`, // Only JWT header
-        },
-        body: formData,
-      })
+    const response = await fetch(`${API_BASE_URL}/api/upload`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    })
 
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.message || "Upload failed")
-      }
-
-      const data = await response.json()
-      console.log("Upload success:", data)
-      return data
-    } catch (err) {
-      console.error("Upload failed:", err)
-      throw err
+    if (!response.ok) {
+      const error = await response.json()
+      throw new Error(error.message || "Upload failed")
     }
+
+    return response.json()
   },
 }
-
 
 // User search API
 export const usersAPI = {
