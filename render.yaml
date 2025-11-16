@@ -24,15 +24,12 @@ services:
         sync: false
 
   # Frontend Service
-  - type: web
+  # Note: REACT_APP_API_URL must be set manually in Render dashboard after deployment
+  - type: static
     name: contact-manager-frontend
-    env: static
     plan: free
     buildCommand: "npm install && npm run build"
     staticPublishPath: build
-    envVars:
-      - key: REACT_APP_API_URL
-        value: https://contact-manager-api.onrender.com/api
 
   # PostgreSQL Database
   - type: pserv
