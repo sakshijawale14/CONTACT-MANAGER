@@ -420,6 +420,38 @@ def create_app():
             db.session.rollback()
             return jsonify({"message": f"Error incrementing access: {str(e)}"}), 500
 
+    # File Upload
+    @app.route('/api/upload', methods=['POST'])
+    @jwt_required()
+    def upload_file():
+        if 'file' not in request.files:
+            return jsonify({"message": "No file part"}), 400
+            
+        file = request.files['file']
+        if file.filename == '':
+            return jsonify({"message": "No selected file"}), 400
+            
+        if file:
+            try:
+                if not cloudinary_configured:
+                    return jsonify({"message": "File upload is not configured on the server"}), 500
+                    
+                # Upload to Cloudinary
+                upload_result = cloudinary.uploader.upload(
+                    file,
+                    folder="contact_manager",
+                    resource_type="auto"
+                )
+                
+                return jsonify({
+                    "url": upload_result.get('secure_url'),
+                    "public_id": upload_result.get('public_id')
+                })
+                
+            except Exception as e:
+                print(f"Error uploading file: {str(e)}")
+                return jsonify({"message": f"Error uploading file: {str(e)}"}), 500
+
     # Messages
     @app.post("/api/messages")
     @jwt_required()

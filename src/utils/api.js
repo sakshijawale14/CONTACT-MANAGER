@@ -1,5 +1,5 @@
 // Using allorigins.win CORS proxy for development
-const API_BASE_URL = process.env.REACT_APP_API_URL || "https://contact-manager-api-bc37.onrender.com/api";
+const API_BASE_URL = process.env.REACT_APP_API_URL || "https://contact-manager-api-bc37.onrender.com";
 
 // Helper function to get auth token
 const getToken = () => {
@@ -197,28 +197,59 @@ export const messagesAPI = {
 }
 
 // Upload API
+// export const uploadAPI = {
+//   uploadImage: async (file) => {
+//     const token = getToken()
+//     const formData = new FormData()
+//     formData.append("file", file)
+
+//     const response = await fetch(`${API_BASE_URL}/api/upload`, {
+//       method: "POST",
+//       headers: {
+//         Authorization: `Bearer ${token}`,
+//       },
+//       body: formData,
+//     })
+
+//     if (!response.ok) {
+//       const error = await response.json()
+//       throw new Error(error.message || "Upload failed")
+//     }
+
+//     return response.json()
+//   },
+// }
+// Upload API
 export const uploadAPI = {
   uploadImage: async (file) => {
     const token = getToken()
     const formData = new FormData()
     formData.append("file", file)
 
-    const response = await fetch(`${API_BASE_URL}/upload`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: formData,
-    })
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/upload`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`, // Only JWT header
+        },
+        body: formData,
+      })
 
-    if (!response.ok) {
-      const error = await response.json()
-      throw new Error(error.message || "Upload failed")
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.message || "Upload failed")
+      }
+
+      const data = await response.json()
+      console.log("Upload success:", data)
+      return data
+    } catch (err) {
+      console.error("Upload failed:", err)
+      throw err
     }
-
-    return response.json()
   },
 }
+
 
 // User search API
 export const usersAPI = {

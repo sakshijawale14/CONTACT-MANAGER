@@ -284,7 +284,10 @@ const ContactCard = ({ contact, onEdit, onMessage }) => {
           )}
         </div>
         <button
-          onClick={handleDelete}
+          onClick={(e) => {
+            e.stopPropagation();      // stop the click from opening edit
+            setShowDeleteConfirm(true); // open delete modal
+          }}
           className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
           title="Delete contact"
         >
