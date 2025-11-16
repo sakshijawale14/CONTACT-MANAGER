@@ -161,7 +161,14 @@ def create_app():
     app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024  # 16MB max file size
 
     # Extensions
-    CORS(app, resources={r"/*": {"origins": os.getenv("ALLOW_ORIGINS", "http://localhost:3000").split(",")}}, supports_credentials=True)
+    CORS(app, resources={
+        r"/*": {
+            "origins": [
+                "https://contact-manager-frontend-h56q.onrender.com",
+                "http://localhost:3000"
+            ]
+        }
+    }, supports_credentials=True)
     JWTManager(app)
     db.init_app(app)
 
