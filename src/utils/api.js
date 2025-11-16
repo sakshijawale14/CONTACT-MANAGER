@@ -1,7 +1,7 @@
-// Using relative path because we're using a proxy in development
+// Using allorigins.win CORS proxy for development
 const API_BASE_URL = process.env.NODE_ENV === 'production' 
   ? 'https://contact-manager-api-bc37.onrender.com/api' 
-  : '/api'
+  : 'https://api.allorigins.win/raw?url=' + encodeURIComponent('https://contact-manager-api-bc37.onrender.com/api')
 
 // Helper function to get auth token
 const getToken = () => {
