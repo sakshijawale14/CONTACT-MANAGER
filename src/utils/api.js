@@ -1,7 +1,5 @@
 // Using allorigins.win CORS proxy for development
-const API_BASE_URL = process.env.NODE_ENV === 'production' 
-  ? 'https://contact-manager-api-bc37.onrender.com/api' 
-  : 'https://api.allorigins.win/raw?url=' + encodeURIComponent('https://contact-manager-api-bc37.onrender.com/api')
+const API_BASE_URL = process.env.REACT_APP_API_URL || "https://contact-manager-api-bc37.onrender.com/api";
 
 // Helper function to get auth token
 const getToken = () => {
