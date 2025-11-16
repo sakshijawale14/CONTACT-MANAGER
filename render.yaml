@@ -34,6 +34,5 @@ services:
   - type: web
     name: contact-manager-frontend
     env: static
-    plan: free
     buildCommand: "npm install && npm run build"
     staticPublishPath: build
