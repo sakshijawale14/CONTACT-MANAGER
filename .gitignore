@@ -1,0 +1,8 @@
+node_modules/ 
+backend/venv/ 
+backend/__pycache__/ 
+backend/instance/ 
+.env 
+backend/.env 
+build/ 
+.DS_Store 

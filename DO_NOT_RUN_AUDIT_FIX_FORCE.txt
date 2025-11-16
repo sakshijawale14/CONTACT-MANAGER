@@ -1,0 +1,27 @@
+================================================================================
+                    🚨 CRITICAL WARNING 🚨
+================================================================================
+
+DO NOT RUN: npm audit fix --force
+
+This command WILL BREAK your React project!
+
+It will:
+  ❌ Downgrade react-scripts to 0.0.0 (invalid version)
+  ❌ Remove critical dependencies
+  ❌ Break your build system
+  ❌ Cause compilation errors
+
+The deprecation warnings you see are:
+  ✅ HARMLESS - they don't affect your app
+  ✅ NORMAL - they're from react-scripts dependencies
+  ✅ SAFE TO IGNORE - your app works fine with them
+
+If you already ran it and broke your project:
+  1. I've fixed package.json for you
+  2. Run: npm install
+  3. Run: npm start
+  4. NEVER run npm audit fix --force again!
+
+================================================================================
+

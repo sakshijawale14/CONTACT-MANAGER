@@ -1,0 +1,43 @@
+services:
+  # Backend Service
+  - type: web
+    name: contact-manager-api
+    env: python
+    plan: free
+    buildCommand: "cd backend && pip install -r requirements.txt && python render_init_db.py"
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: contact-manager-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      - key: ALLOW_ORIGINS
+        value: https://contact-manager-frontend.onrender.com
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+
+  # Frontend Service
+  - type: web
+    name: contact-manager-frontend
+    env: static
+    plan: free
+    buildCommand: "npm install && npm run build"
+    staticPublishPath: build
+    envVars:
+      - key: REACT_APP_API_URL
+        value: https://contact-manager-api.onrender.com/api
+
+  # PostgreSQL Database
+  - type: pserv
+    name: contact-manager-db
+    env: postgres
+    plan: free
+    databases:
+      - name: contact_manager
