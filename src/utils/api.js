@@ -1,4 +1,7 @@
-const API_BASE_URL = process.env.REACT_APP_API_URL || "https://contact-manager-api-bc37.onrender.com/api"
+// Using relative path because we're using a proxy in development
+const API_BASE_URL = process.env.NODE_ENV === 'production' 
+  ? 'https://contact-manager-api-bc37.onrender.com/api' 
+  : '/api'
 
 // Helper function to get auth token
 const getToken = () => {
@@ -29,44 +32,56 @@ const apiRequest = async (endpoint, options = {}) => {
   const config = {
     ...options,
     headers,
+    credentials: 'include', // Important for CORS with credentials
+    mode: 'cors' // Explicitly set CORS mode
   }
 
   try {
+    console.log(`API Request: ${API_BASE_URL}${endpoint}`);
     const response = await fetch(`${API_BASE_URL}${endpoint}`, config)
+    
+    // Log response status
+    console.log(`Response status: ${response.status} ${response.statusText}`);
     
     // Handle network errors or cases where response is not ok
     if (!response.ok) {
-      let errorMessage = "An error occurred"
+      let errorMessage = `HTTP error! status: ${response.status}`;
       try {
-        const errorData = await response.json()
-        errorMessage = errorData.message || errorMessage
+        const errorData = await response.text();
+        console.error('API Error Response:', errorData);
+        // Try to parse as JSON, fallback to text if not JSON
+        try {
+          const jsonError = JSON.parse(errorData);
+          errorMessage = jsonError.message || errorMessage;
+        } catch (e) {
+          errorMessage = errorData || errorMessage;
+        }
       } catch (e) {
-        // If response is not JSON, use status text
-        errorMessage = response.statusText || errorMessage
+        console.error('Error processing error response:', e);
       }
-      throw new Error(errorMessage)
+      throw new Error(errorMessage);
     }
 
     // Try to parse JSON response
-    let data
+    let data;
     try {
-      const text = await response.text()
-      data = text ? JSON.parse(text) : {}
+      const text = await response.text();
+      data = text ? JSON.parse(text) : {};
     } catch (e) {
-      throw new Error("Invalid response from server")
+      throw new Error("Invalid response from server");
     }
-
-    return data
+    
+    return data;
   } catch (error) {
-    console.error("API Error:", error)
+    console.error("API Error:", error);
     
     // Handle network errors (backend not running, CORS, etc.)
     if (error.name === "TypeError" && error.message.includes("fetch")) {
-      throw new Error("Cannot connect to server. Please check your internet connection.")
+      throw new Error("Cannot connect to server. Please check your internet connection and make sure the backend is running.");
     }
     
     // Re-throw the error with its message
-    throw error
+    throw error;
   }
 }
 
