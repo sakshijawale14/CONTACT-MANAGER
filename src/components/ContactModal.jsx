@@ -184,7 +184,16 @@ const ContactModal = ({ contact, onClose }) => {
       onClose()
     } catch (error) {
       console.error("Error saving contact:", error)
-      alert(error.message || "Failed to save contact. Please try again.")
+      const errorMessage = error.message || "Failed to save contact. Please try again."
+      
+      // Show error in a more user-friendly way
+      setErrors((prev) => ({
+        ...prev,
+        submit: errorMessage
+      }))
+      
+      // Also show alert for immediate feedback
+      alert(errorMessage)
     } finally {
       setIsLoading(false)
     }
@@ -389,6 +398,13 @@ const ContactModal = ({ contact, onClose }) => {
               placeholder="Add any additional notes..."
             />
           </div>
+
+          {/* Error Message */}
+          {errors.submit && (
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+              <p className="text-sm font-medium">{errors.submit}</p>
+            </div>
+          )}
 
           {/* Actions */}
           <div className="flex gap-3 pt-4">

@@ -21,7 +21,7 @@ services:
       - key: JWT_SECRET_KEY
         generateValue: true
       - key: ALLOW_ORIGINS
-        value: https://contact-manager-frontend.onrender.com
+        value: https://contact-manager-frontend-h56q.onrender.com
       - key: CLOUDINARY_CLOUD_NAME
         sync: false
       - key: CLOUDINARY_API_KEY

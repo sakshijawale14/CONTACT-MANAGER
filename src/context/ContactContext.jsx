@@ -57,12 +57,15 @@ export const ContactProvider = ({ children }) => {
 
   const addContact = async (contactData) => {
     try {
+      console.log("Adding contact:", contactData)
       const data = await contactsAPI.create(contactData)
+      console.log("Contact added successfully:", data)
       await loadContacts() // Reload to get updated list
       return data
     } catch (error) {
       console.error("Failed to add contact:", error)
-      throw error
+      // Re-throw with more context
+      throw new Error(error.message || "Failed to add contact. Please check your connection and try again.")
     }
   }
 

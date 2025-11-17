@@ -160,16 +160,49 @@ def create_app():
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024  # 16MB max file size
 
-    # Extensions
-    CORS(app, resources={
-        r"/*": {
-            "origins": [
-                "https://contact-manager-frontend-h56q.onrender.com"
-                
-            ]
-        }
-    }, supports_credentials=True)
+    # Extensions - CORS Configuration
+    # Get allowed origins from environment or use default
+    allow_origins_env = os.getenv("ALLOW_ORIGINS", "https://contact-manager-frontend-h56q.onrender.com")
+    # Support multiple origins separated by comma
+    allowed_origins = [origin.strip() for origin in allow_origins_env.split(",") if origin.strip()]
+    
+    # Configure CORS with comprehensive settings
+    CORS(app, 
+         resources={
+             r"/*": {
+                 "origins": allowed_origins,
+                 "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+                 "allow_headers": ["Content-Type", "Authorization", "X-Requested-With"],
+                 "expose_headers": ["Content-Type", "Authorization"],
+                 "supports_credentials": True,
+                 "max_age": 3600
+             }
+         },
+         supports_credentials=True,
+         automatic_options=True)
+    
     JWTManager(app)
+    
+    # Ensure OPTIONS requests don't require JWT and have proper CORS headers
+    @app.before_request
+    def handle_preflight():
+        if request.method == "OPTIONS":
+            response = jsonify({})
+            origin = request.headers.get("Origin")
+            # Allow if origin is in allowed list or if no origin specified (same-origin)
+            if not origin or origin in allowed_origins:
+                if origin:
+                    response.headers.add("Access-Control-Allow-Origin", origin)
+                else:
+                    # If no origin, allow from allowed origins
+                    if allowed_origins:
+                        response.headers.add("Access-Control-Allow-Origin", allowed_origins[0])
+                response.headers.add("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With")
+                response.headers.add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, PATCH")
+                response.headers.add("Access-Control-Allow-Credentials", "true")
+                response.headers.add("Access-Control-Max-Age", "3600")
+            return response
+    
     db.init_app(app)
 
     # Root route
@@ -359,11 +392,15 @@ def create_app():
                 return jsonify({"message": "Contact not found"}), 404
             
             data = request.get_json() or {}
+            
+            # Handle photo separately
+            if "photo" in data:
+                contact.photo_url = data["photo"] if data["photo"] else None
+            
+            # Handle other fields
             for field in ["name", "email", "phone", "company", "notes", "group"]:
                 if field in data:
-                    if field == "photo":
-                        setattr(contact, "photo_url", data[field] if data[field] else None)
-                    elif isinstance(data[field], str):
+                    if isinstance(data[field], str):
                         setattr(contact, field, data[field].strip() if data[field] else None)
                     else:
                         setattr(contact, field, data[field])
