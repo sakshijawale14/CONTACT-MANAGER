@@ -30,9 +30,11 @@ services:
         sync: false
 
   # Frontend Service
-  # Note: REACT_APP_API_URL must be set manually in Render dashboard after deployment
   - type: web
     name: contact-manager-frontend
     env: static
     buildCommand: "npm install && npm run build"
     staticPublishPath: build
+    envVars:
+      - key: REACT_APP_API_URL
+        value: https://contact-manager-api-bc37.onrender.com/api
